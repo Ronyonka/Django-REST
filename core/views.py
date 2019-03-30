@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from github import Github,GithubException
 from django.conf import settings
+from .forms import DictionaryForm
 import requests 
 
 def home(request):
@@ -16,6 +17,8 @@ def home(request):
         'isp':geodata['isp'],
         'country':geodata['country'],
         'latitude':geodata['lat'],
+        'isp':geodata['isp'],
+        'region':geodata['regionName'],
         'longitude':geodata['lon'],
         'api_key':settings.GOOGLE_MAPS_API_KEY,
         'is_cached': is_cached
@@ -61,4 +64,12 @@ def github_client(request):
 
     return render(request, 'github.html', {'search_result':search_result})
 
-
+def oxford(request):
+    search_result = {}
+    if 'word' in request.GET:
+        form = DictionaryForm(request.GET)
+        if form.is_valid():
+            search_result = form.search()
+    else:
+        form = DictionaryForm()
+    return render(request, 'oxford.html', {'form':form,'search_result':search_result})
