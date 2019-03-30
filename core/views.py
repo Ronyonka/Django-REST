@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from github import Github,GithubException
 from django.conf import settings
 import requests 
 
@@ -21,10 +22,43 @@ def home(request):
     })
 
 def github(request):
-    user = {}
+    search_result = {}
     if 'username' in request.GET:
         username = request.GET['username']
         url = 'https://api.github.com/users/%s' % username
         response = requests.get(url)
-        user = response.json()
-    return render(request,'github.html', {'user':user})
+        search_was_successful = (response.status_code == 200)
+        search_result = response.json()
+        search_result['success'] = search_was_successful
+        search_result['rate']={
+            'limit':response.headers['X-RateLimit-Limit'],
+            'remaining':response.headers['X-RateLimit-Remaining'],
+        }
+    return render(request,'github.html', {'search_result':search_result})
+
+def github_client(request):
+    search_result = {}
+    if 'username' in request.GET:
+        username = request.GET['username']
+        client = Gihub()
+
+        try:
+            user = client.get_user(username)
+            search_result['name'] = user.name
+            search_result['login'] = user.login
+            search_result['public_repos'] = user.public_repos
+            search_result['success'] = False
+
+        except GithubException as ge:
+            search_result['message'] =ge.data['message']
+            search_result['success'] = False
+
+        rate_limit = client.get_rate_limit()
+        search_result['rate'] ={
+            'limit': rate_limit.rate.limit,
+            'remaining': rate_limit.rate.remaining,
+        }
+
+    return render(request, 'github.html', {'search_result':search_result})
+
+

@@ -4,13 +4,24 @@
   <h2>GitHub API</h2>
   <form method="get">
     <input type="text" name="username">
-    <button type="submit">search on github</button>
+    <button type="submit">Search on github</button>
   </form>
-  {% if user %}
-    <img src="{{ user.avatar_url }}" alt="{{ user.login }} Profile Photo" style="width:100px;height:auto;">
-    <p><strong>{{ user.login }}</strong> has <strong>{{ user.public_repos }}</strong> public repositories.</p>
-
-{% else%}
-<h2>No user with that username</h2>
+  {% if search_result %}
+  {% if search_result.success %}
+    <img src="{{ search_result.avatar_url }}" alt="{{ search_result.login }} Profile Photo" style="width:100px;height:auto;">
+    <p>
+    <strong>{{ search_result.name|default_if_none:search_result.login }}</strong> has
+    <strong>{{ search_result.public_repos }}</strong> public repositories.
+    </p>
+    <p>
+    <strong>{{ search_result.followers}} </strong> Followers
+    </p>
+    <p>
+    <strong>{{ search_result.following}} </strong> Following
+    </p>
+    {% else %}
+      <p><em>{{ search_result.message }}</em></p>
+    {% endif %}
+    <p>Rate limit: {{ search_result.rate.remaining }}/{{ search_result.rate.limit }}</p>
   {% endif %}
 {% endblock %}
