@@ -8,10 +8,9 @@ def home(request):
     return render (request, 'home.html', {
         'ip':geodata['query'],
         'isp':geodata['isp'],
-        'region':geodata['regionName'],
         'country':geodata['country'],
         'latitude':geodata['lat'],
         'longitude':geodata['lon'],
-        'api_key':'AIzaSyAlBzoeKIXEs88q_0XtwjNq9jsAnVRmE5A'
+        'api_key':settings.GOOGLE_MAPS_API_KEY,
     })
 
