@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>GitHub API</h2>
+  <form method="get">
+    <input type="text" name="username">
+    <button type="submit">search on github</button>
+  </form>
+  {% if user %}
+    <img src="{{ user.avatar_url }}" alt="{{ user.login }} Profile Photo" style="width:100px;height:auto;">
+    <p><strong>{{ user.login }}</strong> has <strong>{{ user.public_repos }}</strong> public repositories.</p>
+
+{% else%}
+<h2>No user with that username</h2>
+  {% endif %}
+{% endblock %}
